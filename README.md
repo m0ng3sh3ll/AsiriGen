@@ -50,7 +50,7 @@ Suporte nativo para **Português (pt-BR)** e Inglês (en-US). Gera variações c
 ### Instalação via Go
 ```bash
 # Clonar o repositório
-git clone github.com/m0ngesh3ll/asirigen.git
+git clone github.com/m0ng3sh3ll/AsiriGen.git
 cd asirigen
 
 # Instalar dependências
