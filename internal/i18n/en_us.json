@@ -1,0 +1,18 @@
+{
+  "common_words": [
+    "admin", "user", "test", "demo", "guest", "root",
+    "password", "pass", "login", "access", "system",
+    "server", "database", "network", "security",
+    "welcome", "default", "temp", "backup", "master"
+  ],
+  "common_suffixes": [
+    "123", "1234", "12345", "123456", "01", "02",
+    "!", "@", "#", "$", "2023", "2024", "2025"
+  ],
+  "seasons": ["spring", "summer", "fall", "autumn", "winter"],
+  "months": [
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december"
+  ]
+}
+

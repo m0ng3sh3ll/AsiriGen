@@ -1,0 +1,19 @@
+{
+  "common_words": [
+    "admin", "usuario", "teste", "demo", "convidado", "root",
+    "senha", "acesso", "login", "sistema", "servidor",
+    "banco", "rede", "seguranca", "mudar", "trocar",
+    "bemvindo", "padrao", "temp", "backup", "mestre",
+    "financeiro", "portaria", "recepcao"
+  ],
+  "common_suffixes": [
+    "123", "1234", "12345", "123456", "01", "02",
+    "!", "@", "#", "$", "2023", "2024", "2025"
+  ],
+  "seasons": ["primavera", "verao", "outono", "inverno"],
+  "months": [
+    "janeiro", "fevereiro", "marco", "abril", "maio", "junho",
+    "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+  ]
+}
+
