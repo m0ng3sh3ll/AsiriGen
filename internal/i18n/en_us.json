@@ -1,10 +1,5 @@
 {
-  "common_words": [
-    "admin", "user", "test", "demo", "guest", "root",
-    "password", "pass", "login", "access", "system",
-    "server", "database", "network", "security",
-    "welcome", "default", "temp", "backup", "master"
-  ],
+  "common_words": [],
   "common_suffixes": [
     "123", "1234", "12345", "123456", "01", "02",
     "!", "@", "#", "$", "2023", "2024", "2025"
@@ -13,6 +8,17 @@
   "months": [
     "january", "february", "march", "april", "may", "june",
     "july", "august", "september", "october", "november", "december"
+  ],
+  "months_short": [
+    "jan", "feb", "mar", "apr", "may", "jun",
+    "jul", "aug", "sep", "oct", "nov", "dec"
+  ],
+  "weekdays": [
+    "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"
+  ],
+  "weekdays_short": [
+    "sun", "mon", "tue", "wed", "thu", "fri", "sat"
   ]
 }
+
 

@@ -485,9 +485,10 @@ func (g *Generator) GenerateIntelligentWordlist(company string, commonWords []st
 		tempBuffer = append(tempBuffer, words...)
 	}
 
-	fmt.Print("🎯 Gerando senhas de alta prioridade... ")
-	processList(g.getHighPriorityPasswords())
-	fmt.Println("✅")
+	// REMOVIDO: getHighPriorityPasswords() - senhas genéricas já cobertas por rockyou.txt
+	// fmt.Print("🎯 Gerando senhas de alta prioridade... ")
+	// processList(g.getHighPriorityPasswords())
+	// fmt.Println("✅")
 
 	if company != "" {
 		fmt.Print("🏢 Gerando senhas baseadas na empresa... ")
@@ -505,9 +506,10 @@ func (g *Generator) GenerateIntelligentWordlist(company string, commonWords []st
 	processList(g.generateSeasonalPasswords())
 	fmt.Println("✅")
 
-	fmt.Print("⌨️  Gerando padrões de teclado... ")
-	processList(g.generateKeyboardPasswords())
-	fmt.Println("✅")
+	// REMOVIDO: generateKeyboardPasswords() - padrões genéricos já cobertos por rockyou.txt
+	// fmt.Print("⌨️  Gerando padrões de teclado... ")
+	// processList(g.generateKeyboardPasswords())
+	// fmt.Println("✅")
 
 	// Templates Personalizados
 	if len(g.config.Templates) > 0 {
@@ -524,7 +526,7 @@ func (g *Generator) GenerateIntelligentWordlist(company string, commonWords []st
 		fmt.Println("✅")
 	}
 
-	// Leetspeak
+	// Leetspeak - Aplicar em palavras base E gerar variações completas
 	if g.config.LeetMode {
 		fmt.Print("🔤 Aplicando leetspeak... ")
 		var baseWords []string
@@ -533,9 +535,18 @@ func (g *Generator) GenerateIntelligentWordlist(company string, commonWords []st
 		}
 		baseWords = append(baseWords, commonWords...)
 
+		// Gerar variações leet
+		var leetWords []string
 		for _, word := range baseWords {
-			processList(g.generateLeetWord(word))
+			leetWords = append(leetWords, g.generateLeetWord(word)...)
 		}
+
+		// Adicionar variações leet básicas
+		processList(leetWords)
+
+		// NOVO: Gerar variações completas das palavras leet (números + sufixos)
+		processList(g.generateWordBasedPasswords(leetWords))
+
 		fmt.Println("✅")
 	}
 
@@ -703,51 +714,116 @@ func (g *Generator) generateWordBasedPasswords(words []string) []string {
 	var passwords []string
 
 	for _, word := range words {
-		word = strings.ToLower(strings.TrimSpace(word))
+		word = strings.TrimSpace(word)
 		if word == "" {
 			continue
 		}
 
-		// Variações básicas
-		variations := []string{
-			word,
-			strings.Title(word),
-			strings.ToUpper(word),
+		// Processar palavra e adicionar ao resultado
+		passwords = append(passwords, g.processWord(word)...)
+	}
+
+	return passwords
+}
+
+// processWord processa uma única palavra e gera todas as variações
+func (g *Generator) processWord(word string) []string {
+	var passwords []string
+
+	// Variações de case (preservando a palavra original também)
+	variations := []string{
+		word,                  // Original (pode ser leet: m@raul, ou normal: localbw)
+		strings.ToLower(word), // minúsculo
+		strings.Title(word),   // Title Case
+		strings.ToUpper(word), // MAIÚSCULO
+	}
+
+	// Remover duplicatas (caso word já seja minúsculo, por exemplo)
+	uniqueVariations := make(map[string]bool)
+	var finalVariations []string
+	for _, v := range variations {
+		if !uniqueVariations[v] {
+			uniqueVariations[v] = true
+			finalVariations = append(finalVariations, v)
 		}
+	}
+	variations = finalVariations
 
-		// Adicionar variações simples (sem números)
-		passwords = append(passwords, variations...)
+	// Adicionar variações simples (sem números)
+	passwords = append(passwords, variations...)
 
-		// Adicionar números
-		for _, year := range g.years {
-			for _, variation := range variations {
+	// Adicionar números
+	for _, year := range g.years {
+		for _, variation := range variations {
+			passwords = append(passwords,
+				variation+fmt.Sprintf("%d", year),
+				variation+fmt.Sprintf("%02d", year%100),
+				variation+"_"+fmt.Sprintf("%02d", year%100),
+				variation+"@"+fmt.Sprintf("%02d", year%100),
+			)
+		}
+	}
+
+	// Adicionar números comuns
+	commonNumbers := []string{"123", "456", "789", "000", "111", "222", "333", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20"}
+	for _, variation := range variations {
+		for _, num := range commonNumbers {
+			passwords = append(passwords,
+				variation+num,
+				num+variation,
+				variation+"_"+num,
+				variation+"@"+num,
+			)
+		}
+	}
+
+	// Adicionar sufixos comuns
+	commonSuffixes := []string{"!", "@", "#", "$", "%", "^", "&", "*"}
+	for _, variation := range variations {
+		for _, suffix := range commonSuffixes {
+			passwords = append(passwords, variation+suffix)
+		}
+	}
+
+	// NOVO: Adicionar combinações número + sufixo (ex: Localbw10*, M@raul17*)
+	for _, variation := range variations {
+		for _, num := range commonNumbers {
+			for _, suffix := range commonSuffixes {
 				passwords = append(passwords,
-					variation+fmt.Sprintf("%d", year),
-					variation+fmt.Sprintf("%02d", year%100),
-					variation+"_"+fmt.Sprintf("%02d", year%100),
-					variation+"@"+fmt.Sprintf("%02d", year%100),
+					variation+num+suffix,
+					variation+"_"+num+suffix,
+					variation+"@"+num+suffix,
 				)
 			}
 		}
+	}
 
-		// Adicionar números comuns
-		commonNumbers := []string{"123", "456", "789", "000", "111", "222", "333", "01", "02", "03", "04", "05"}
+	// NOVO: Adicionar prefixos (ex: !brasil123, !bw2017)
+	commonPrefixes := []string{"!", "@", "#"}
+	for _, prefix := range commonPrefixes {
+		// Prefixo + palavra
+		for _, variation := range variations {
+			passwords = append(passwords, prefix+variation)
+		}
+
+		// Prefixo + palavra + número
 		for _, variation := range variations {
 			for _, num := range commonNumbers {
 				passwords = append(passwords,
-					variation+num,
-					num+variation,
-					variation+"_"+num,
-					variation+"@"+num,
+					prefix+variation+num,
+					prefix+variation+"_"+num,
+					prefix+variation+"@"+num,
 				)
 			}
 		}
 
-		// Adicionar sufixos comuns
-		commonSuffixes := []string{"!", "@", "#", "$", "%", "^", "&", "*"}
+		// Prefixo + palavra + ano
 		for _, variation := range variations {
-			for _, suffix := range commonSuffixes {
-				passwords = append(passwords, variation+suffix)
+			for _, year := range g.years {
+				passwords = append(passwords,
+					prefix+variation+fmt.Sprintf("%d", year),
+					prefix+variation+fmt.Sprintf("%02d", year%100),
+				)
 			}
 		}
 	}

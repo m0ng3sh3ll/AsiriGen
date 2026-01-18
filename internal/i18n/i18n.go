@@ -16,12 +16,15 @@ type LocaleData struct {
 	CommonSuffixes []string `json:"common_suffixes"`
 	Seasons        []string `json:"seasons"`
 	Months         []string `json:"months"`
+	MonthsShort    []string `json:"months_short"`   // Abreviações de meses (Jan, Fev, etc)
+	Weekdays       []string `json:"weekdays"`       // Dias da semana
+	WeekdaysShort  []string `json:"weekdays_short"` // Abreviações de dias (Seg, Ter, etc)
 }
 
 // LoadLocale carrega os dados de um idioma específico
 func LoadLocale(lang string) (*LocaleData, error) {
 	lang = strings.ToLower(strings.ReplaceAll(lang, "-", "_"))
-	
+
 	// Normalização simples
 	if lang == "pt" {
 		lang = "pt_br"
@@ -31,7 +34,7 @@ func LoadLocale(lang string) (*LocaleData, error) {
 	}
 
 	filename := lang + ".json"
-	
+
 	data, err := localeFS.ReadFile(filename)
 	if err != nil {
 		return nil, fmt.Errorf("idioma não encontrado: %s (tente pt-br ou en-us)", lang)
@@ -44,4 +47,3 @@ func LoadLocale(lang string) (*LocaleData, error) {
 
 	return &locale, nil
 }
-

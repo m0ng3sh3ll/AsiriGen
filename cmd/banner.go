@@ -6,7 +6,7 @@ import (
 
 // Constantes de Versão
 const (
-	Version = "1.0.0" // Major update com OSINT/Templates
+	Version = "1.1.0"
 	Author  = "m0ng3Sh3ll"
 )
 
